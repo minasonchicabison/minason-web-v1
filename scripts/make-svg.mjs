@@ -21,7 +21,12 @@ const svg = `<?xml version="1.0" encoding="UTF-8"?>
         <xhtml:style>
           html, body { margin:0; width:100%; height:100%; overflow:hidden; }
         </xhtml:style>
-        <xhtml:script type="module" src="../assets/${js}"></xhtml:script>
+        <xhtml:script><![CDATA[
+          import("../assets/${js}").catch(error => {
+            document.body.textContent = "Minason startup error: " + error;
+            console.error(error);
+          });
+        ]]></xhtml:script>
       </xhtml:head>
       <xhtml:body>
         <xhtml:div id="app">

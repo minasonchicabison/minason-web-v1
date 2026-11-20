@@ -13,7 +13,12 @@
         <xhtml:style>
           html, body { margin:0; width:100%; height:100%; overflow:hidden; }
         </xhtml:style>
-        <xhtml:script type="module" src="../assets/index-ChFXSGaL.js"></xhtml:script>
+        <xhtml:script><![CDATA[
+          import("../assets/index-ChFXSGaL.js").catch(error => {
+            document.body.textContent = "Minason startup error: " + error;
+            console.error(error);
+          });
+        ]]></xhtml:script>
       </xhtml:head>
       <xhtml:body>
         <xhtml:div id="app">
