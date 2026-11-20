@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xhtml="http://www.w3.org/1999/xhtml"
+     width="100%" height="100%">
+  <title>minason web v1.2</title>
+  <foreignObject width="100%" height="100%">
+    <xhtml:html>
+      <xhtml:head>
+        <xhtml:meta charset="utf-8"/>
+        <xhtml:meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <xhtml:title>minason web v1.2</xhtml:title>
+        <xhtml:link rel="stylesheet" href="../assets/index-thknHBar.css"/>
+        <xhtml:style>
+          html, body { margin:0; width:100%; height:100%; overflow:hidden; }
+        </xhtml:style>
+        <xhtml:script type="module" src="../assets/index-ChFXSGaL.js"></xhtml:script>
+      </xhtml:head>
+      <xhtml:body>
+        <xhtml:div id="app">
+          <xhtml:header id="tabbar">
+            <xhtml:div id="tabs" role="tablist"></xhtml:div>
+            <xhtml:button class="ib" id="newtab" data-i="plus" title="New tab (Alt+T)"></xhtml:button>
+          </xhtml:header>
+          <xhtml:div id="toolbar">
+            <xhtml:button class="ib" id="back" data-i="back"></xhtml:button>
+            <xhtml:button class="ib" id="fwd" data-i="fwd"></xhtml:button>
+            <xhtml:button class="ib" id="reload" data-i="reload"></xhtml:button>
+            <xhtml:button class="ib" id="home" data-i="home"></xhtml:button>
+            <xhtml:div id="omni">
+              <xhtml:span id="conn"></xhtml:span>
+              <xhtml:input id="addr" type="text" placeholder="Search or enter address"/>
+              <xhtml:button class="ib sm" id="star" data-i="star"></xhtml:button>
+            </xhtml:div>
+            <xhtml:div id="ext"></xhtml:div>
+            <xhtml:button class="ib" id="fs" data-i="expand"></xhtml:button>
+            <xhtml:button class="ib" id="bm" data-i="bookmark"></xhtml:button>
+            <xhtml:button class="ib" id="hist" data-i="clock"></xhtml:button>
+            <xhtml:button class="ib" id="set" data-i="sliders"></xhtml:button>
+            <xhtml:div id="load"></xhtml:div>
+          </xhtml:div>
+          <xhtml:main id="viewport">
+            <xhtml:section id="home-page" hidden="hidden">
+              <xhtml:div class="aura"></xhtml:div>
+              <xhtml:h1>minason web v1.2</xhtml:h1>
+              <xhtml:p id="clock"></xhtml:p>
+              <xhtml:p id="greet"></xhtml:p>
+              <xhtml:form id="hform">
+                <xhtml:input id="hsearch" type="text" placeholder="Search or enter address"/>
+              </xhtml:form>
+              <xhtml:div id="shortcuts"></xhtml:div>
+              <xhtml:div id="status" role="status"></xhtml:div>
+            </xhtml:section>
+          </xhtml:main>
+          <xhtml:aside id="panel" aria-hidden="true">
+            <xhtml:div class="ph">
+              <xhtml:h2 id="ptitle"></xhtml:h2>
+              <xhtml:button class="ib sm" id="pclose" data-i="x"></xhtml:button>
+            </xhtml:div>
+            <xhtml:div id="pbody"></xhtml:div>
+          </xhtml:aside>
+          <xhtml:div id="popupHost"></xhtml:div>
+          <xhtml:div id="menu" hidden="hidden"></xhtml:div>
+          <xhtml:div id="toast" role="alert"></xhtml:div>
+        </xhtml:div>
+        <xhtml:script><![CDATA[
+          (() => {
+            const ns = 'http://www.w3.org/1999/xhtml';
+            const html = document.getElementsByTagNameNS(ns, 'html')[0];
+            const head = html.getElementsByTagNameNS(ns, 'head')[0];
+            const body = html.getElementsByTagNameNS(ns, 'body')[0];
+            const createNS = document.createElementNS.bind(document);
+            document.getElementById = id =>
+              html.querySelector('#' + id);
+
+            Object.defineProperties(document, {
+              documentElement: { configurable:true, get:() => html },
+              head: { configurable:true, get:() => head },
+              body: { configurable:true, get:() => body }
+            });
+
+            document.createElement = (tag, options) =>
+              createNS(ns, tag, options);
+
+            document.createElementNS = (namespace, tag, options) =>
+              createNS(namespace || ns, tag, options);
+          })();
+                ]]></xhtml:script>
+      </xhtml:body>
+    </xhtml:html>
+  </foreignObject>
+</svg>

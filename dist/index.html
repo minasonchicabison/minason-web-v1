@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>minason web v1.2</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%238f7cff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/manrope@5/index.css">
+  <script type="module" crossorigin src="/gh/minasonchicabison/minason-web-v1@main/dist/assets/index-ChFXSGaL.js"></script>
+  <link rel="stylesheet" crossorigin href="/gh/minasonchicabison/minason-web-v1@main/dist/assets/index-thknHBar.css">
+</head>
+<body>
+<div id="app">
+  <header id="tabbar"><div id="tabs" role="tablist"></div><button class="ib" id="newtab" data-i="plus" title="New tab (Alt+T)"></button></header>
+  <div id="toolbar">
+    <button class="ib" id="back" data-i="back" title="Back (Alt+←)"></button>
+    <button class="ib" id="fwd" data-i="fwd" title="Forward (Alt+→)"></button>
+    <button class="ib" id="reload" data-i="reload" title="Reload (Ctrl+R)"></button>
+    <button class="ib" id="home" data-i="home" title="Home"></button>
+    <div id="omni"><span id="conn" title="Wisp status"></span><input id="addr" type="text" spellcheck="false" autocomplete="off" placeholder="Search or enter address" aria-label="Address"><button class="ib sm" id="star" data-i="star" title="Bookmark (Ctrl+D)"></button></div>
+    <div id="ext"></div>
+    <button class="ib" id="fs" data-i="expand" title="Fullscreen (Alt+F)"></button>
+    <button class="ib" id="bm" data-i="bookmark" title="Bookmarks"></button>
+    <button class="ib" id="hist" data-i="clock" title="History"></button>
+    <button class="ib" id="set" data-i="sliders" title="Settings"></button>
+    <div id="load"></div>
+  </div>
+  <main id="viewport">
+    <section id="home-page" hidden>
+      <div class="aura"></div>
+      <h1>minason web v1.2</h1>
+      <p id="clock"></p>
+      <p id="greet"></p>
+      <form id="hform"><input id="hsearch" type="text" spellcheck="false" autocomplete="off" placeholder="Search or enter address" aria-label="Search"></form>
+      <div id="shortcuts"></div>
+      <div id="status" role="status"></div>
+    </section>
+  </main>
+  <aside id="panel" aria-hidden="true"><div class="ph"><h2 id="ptitle"></h2><button class="ib sm" id="pclose" data-i="x" title="Close"></button></div><div id="pbody"></div></aside>
+  <div id="popupHost"></div><div id="menu" hidden></div><div id="toast" role="alert"></div>
+</div>
+</body>
+</html>

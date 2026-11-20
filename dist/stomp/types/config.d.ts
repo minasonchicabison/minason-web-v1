@@ -1,0 +1,255 @@
+import GenericCodec from './Codecs';
+import type { HelperNames } from './helperNames';
+import type { ResolvedHooks } from './hooks';
+import type { PasskeysConfig } from './passkeys/types';
+export declare type ConfigCodec = 'generic' | 'xor' | 'aes' | 'base64';
+export interface Config {
+    codec: ConfigCodec;
+    /**
+     * pathname this controller's routes live under: the scope plus the
+     * controller's id, e.g. `/stomp/k7qx2m/` (its address in the service
+     * worker; every routed URL starts with it)
+     */
+    directory: string;
+    /**
+     * pathname of the directory the service worker is scoped to and the
+     * bundles are served from, e.g. `/stomp/`; shared by every controller of
+     * that scope, and the only thing the asset URLs are built from
+     */
+    scope: string;
+    /**
+     * Origins allowed to embed proxied documents, emitted as a
+     * `Content-Security-Policy: frame-ancestors` header. Set by the controller
+     * frame in origin-isolation mode so only the host application can frame
+     * the proxy origin. Absent in same-origin mode.
+     */
+    frameAncestors?: string[];
+    /**
+     * The host application handles `window.open` and `target="_blank"`
+     * (`onOpen` on the controller): pages post the URL to it instead of
+     * opening a popup, and `window.open` returns null like a popup blocker.
+     */
+    openTab?: boolean;
+    /**
+     * Set by the controller when its transport runs in the transport worker,
+     * where a synchronous request from a page completes (with the transport
+     * in the page the spin would block it): a document no service worker
+     * controls then loads a script the page writes synchronously, in order.
+     */
+    workerTransport?: boolean;
+    /**
+     * HTTP cache in the service worker, on unless `false`: GET responses are
+     * kept in a Cache API store and served or revalidated with ETag /
+     * Last-Modified as Chrome's HTTP cache does (docs/http-cache.md).
+     */
+    cache?: boolean;
+    /**
+     * A script the rewriter cannot parse runs as it was (default). `false`
+     * makes it fail instead, with a SyntaxError naming the rewriter error, so
+     * a broken rewrite is loud while developing.
+     */
+    allowInvalidJs?: boolean;
+    /**
+     * The window membrane (on unless `false`): every window and object of
+     * another proxied site's realm reaches a page through a proxy that checks,
+     * on each use, which site the window shows now (see StompController)
+     */
+    membrane?: boolean;
+    /**
+     * Emulated service workers (on unless `false`): a page's
+     * `navigator.serviceWorker` registers workers that run in a dedicated
+     * Worker the controller starts, and STomp's own service worker hands them
+     * the page's requests (docs/service-workers.md). Off, pages have no
+     * `navigator.serviceWorker` (a proxy tell: every Chrome page in a secure
+     * context has one).
+     */
+    serviceWorkers?: boolean;
+    /**
+     * Passkeys for proxied sites (docs/passkeys.md), set when the host gave
+     * the controller a `passkeys` option: a page's WebAuthn requests go to
+     * STomp's own authenticator in the service worker, and the host asks the
+     * user. Absent, a page's requests end as they do in a browser that holds
+     * no passkey for it.
+     */
+    passkeys?: PasskeysConfig;
+    /**
+     * The built-in blocker is on (ControllerInit.adblock): the service worker
+     * blocks what the lists block, and every document's inject applies the
+     * cosmetic rules and the scriptlets it is handed (docs/adblock.md).
+     */
+    adblock?: boolean;
+    /** the served file names, when the host renamed them (see Assets) */
+    assets?: Assets;
+    /**
+     * The global names the rewriter and the inject bundles use (see
+     * HelperNames): a deployment's own, when the host set them, and the
+     * client's the controller minted otherwise. Defaults: `$s$j`, `$s$L`,
+     * `$s$N` (`$P$s` for the client only where no controller named one).
+     */
+    names?: Partial<HelperNames>;
+    /**
+     * Host code run in every proxied realm, as resolved text (see
+     * src/hooks.ts; the controllers take `init.hooks` with sources or URLs
+     * and put the text here).
+     */
+    hooks?: ResolvedHooks;
+    /**
+     * The host's own page for a document the proxy failed to produce (a
+     * transport failure, the timeout, a routing error, a blocked rule): a
+     * path on the service worker's origin,
+     * which in origin-isolation mode is the proxy host, not the host page's.
+     * Served with the failure's status and `globalThis.stompError`
+     * (`{ url, status, error, kind }`), never cached. Without it the built-in
+     * pages answer.
+     */
+    errorPage?: string;
+}
+/**
+ * The site pool as a document sees it (Config.sites): the hub's origin (the
+ * host's page, which a proxied document never shows as a window of its
+ * world) and the token every STomp document of the hub puts in a message to
+ * a window of another slot's origin, which the receiver checks (a page
+ * cannot make one, so a message's stated origin is the sender's inject's)
+ */
+export interface SitesConfig {
+    /** the origin of the page whose frames show the sites (the real top) */
+    hub: string;
+    token: string;
+    /**
+     * the origin of the hub's controller, whose worker shows a slot's
+     * documents once the slot's agent is gone: `hub`'s own, or the proxy's
+     * when the hub is a controller frame (RemoteController)
+     */
+    home?: string;
+    /**
+     * the pool's slots' origins: a navigation to a site of another slot is
+     * a 307 there, which the browser's copy of a page's frame-src and
+     * form-action lets through (src/csp.ts browserPolicy), and what the
+     * browser names on another slot's origin is read as the route's real
+     * URL (src/inject/dom/modules/ContentSecurity.ts)
+     */
+    origins?: string[];
+}
+/**
+ * The site pool: the property of a slot's agent window (src/controller/site.ts)
+ * that holds the hub's frame that has focus there, which a top document of
+ * the slot reads as it starts (src/inject/dom/siteWindows.ts keepTopFocus)
+ */
+export declare const SITE_FOCUS = "$stomp$siteFocus";
+/**
+ * The site pool: the property of a slot's agent window (and of the hub's,
+ * the controller frame's, for a site shown without the pool) that holds
+ * what the hub last told of each of its frames' runs of history
+ * (src/controller/history.ts expectRuns): the length a top document's
+ * history has when the browser navigated the frame to it by a push, and by
+ * a replace or reload, which it reads as it starts (the Navigate module),
+ * before the hub's count of the other slots' entries reaches it
+ */
+export declare const SITE_RUNS = "$stomp$siteRuns";
+/**
+ * The property of the hub's window (the host's page, or an isolated
+ * RemoteController's controller frame) and of each slot's agent window that
+ * holds the host's browser window as its frames' documents see it
+ * (src/controller/geometry.ts): a proxied document reads its outer size and
+ * screen position from it (src/inject/dom/hostGeometry.ts)
+ */
+export declare const HOST_GEOMETRY = "$stomp$hostGeometry";
+/** what HOST_GEOMETRY holds, measured in the host's page (its real top) */
+export interface HostGeometry {
+    /**
+     * the browser's own UI around the host's viewport: outerWidth minus
+     * innerWidth, outerHeight minus innerHeight
+     */
+    chrome: readonly [number, number];
+    /**
+     * each frame of the host's page by its index in the page's `frames`:
+     * where its viewport is in the host's (left, top) and how much of the
+     * host's viewport is not the frame's (width, height); null for a frame
+     * that shows no proxied page
+     */
+    frames: readonly (readonly [number, number, number, number] | null)[];
+}
+export interface ParsedConfig extends Omit<Config, 'codec'> {
+    codec: GenericCodec;
+}
+export declare function parseConfig(config: Config, codecKey: string): ParsedConfig;
+export declare function generateConfigCodecKey(codec: ConfigCodec): string;
+/**
+ * Whether `key` is a key the codec makes today. A stored xor key of the
+ * codec before docs/codec.md (three hex digits at the most) is not: the
+ * worker draws a new one, as for a first visit.
+ */
+export declare function validConfigCodecKey(codec: ConfigCodec, key: unknown): boolean;
+export declare function codecType(codec: GenericCodec): ConfigCodec;
+/**
+ * The files `dist/` ships, by the names the host serves them under in its
+ * `directory`. Every name defaults to the file's own; a host that renames
+ * them (so no served URL carries the package name) says so here, and the
+ * worker, the controllers and the shell build their URLs from these.
+ */
+export interface Assets {
+    serviceWorker?: string;
+    injectDocument?: string;
+    injectWorker?: string;
+    /**
+     * the inject bundles that carry crypto-js (build.js), served to the aes
+     * and base64 codecs, which read it; the xor and generic codecs read none,
+     * so they load the crypto-free injectDocument/injectWorker instead
+     * (src/routeURL.ts)
+     */
+    injectDocumentFull?: string;
+    injectWorkerFull?: string;
+    controllerFrame?: string;
+    /** the script controllerFrame.html loads; told to the frame through `?script=` */
+    controllerFrameScript?: string;
+    /** the script controllerFrame.html loads as a slot's agent of the site pool (ControllerInit.sitePool) */
+    siteFrameScript?: string;
+    /** the dedicated Worker that hosts a transport given as a descriptor */
+    transportWorker?: string;
+    /** the dedicated Worker a document starts for its WebRTC connections (docs/webrtc-over-wisp.md) */
+    rtcWorker?: string;
+    /** the WebRTC stack's wasm module */
+    rtc?: string;
+    /** what a document's WebRTC classes do, loaded the first time it uses them */
+    rtcStack?: string;
+    /** the dedicated Workers that rewrite scripts for the service worker */
+    rewriteWorker?: string;
+    /**
+     * The core wasm module (docs/rust-plan.md): the JS rewriter, the CSS
+     * rewriter and markup scanner, and the public suffix lookup, built into
+     * one artifact
+     */
+    core?: string;
+    /** the built-in blocker's wasm module (docs/adblock.md) */
+    blocker?: string;
+    /**
+     * the built-in blocker's default scriptlets and redirect resources,
+     * uBlock Origin's (docs/adblock.md), which the service worker reads when
+     * `init.adblock` names no `resources`
+     */
+    adblockResources?: string;
+    /**
+     * The light rewriter library (the wasm glue, src/rewriterLightDocument.ts):
+     * no document bundle carries it. A proxied top's shell loads this file,
+     * and a sandboxed frame fetches it the first time it rewrites. It is asked
+     * for as `<name>?<hash of its bytes>`, so it can be cached for as long as
+     * the host likes. The rewriter itself is the wasm `core` module.
+     */
+    rewriterLib?: string;
+}
+export declare const DEFAULT_ASSETS: Required<Assets>;
+/**
+ * The wasm artifacts, by Assets key: what a controller running
+ * `rewriter: 'wasm'` loads and hands to the service worker and its rewrite
+ * workers (src/wasm/thread.ts)
+ */
+export declare const WASM_ASSETS: ["core"];
+/** a served file's name: the host's, else the default */
+export declare function assetName(assets: Assets | undefined, key: keyof Assets): string;
+/**
+ * A file the controller starts, as it asks for it: its name and the hash of
+ * this build's bytes (src/version.ts TRANSPORT_WORKER), so that one URL is
+ * one file and a host may answer it `immutable`. The name alone in a
+ * build with no hashes (the watch build).
+ */
+export declare function assetFile(assets: Assets | undefined, key: 'transportWorker' | 'rewriteWorker' | 'blocker' | 'controllerFrame' | 'controllerFrameScript' | 'siteFrameScript'): string;

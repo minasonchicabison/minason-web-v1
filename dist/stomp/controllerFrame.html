@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Stomp controller</title>
+		<!--
+			Origins allowed to embed this frame and drive the proxy. Leave empty to
+			trust whichever page embedded it (its origin is taken from the referrer
+			at load time and never changes). List origins separated by spaces to
+			lock it down for a deployment.
+		-->
+		<meta name="stomp-allowed-origins" content="" />
+	</head>
+	<body>
+		<script>
+			// The host may serve this frame's script under another name and says
+			// so with ?script=<name> (RemoteControllerInit.assets). A name is a
+			// bare file name only, with the hash of its bytes after a `?` (the
+			// controller asks for it so, src/config.ts assetFile): nothing else
+			// is accepted, and without one the default applies.
+			(function () {
+				var name = new URLSearchParams(location.search).get('script');
+				var safe =
+					name !== null &&
+					/^[\w.-]+(\?[0-9a-f]{16})?$/.test(name) &&
+					name.indexOf('/') === -1 &&
+					name.indexOf('..') === -1
+						? name
+						: 'controllerFrame.js';
+				var script = document.createElement('script');
+				script.src = safe;
+				document.body.appendChild(script);
+			})();
+		</script>
+	</body>
+</html>
