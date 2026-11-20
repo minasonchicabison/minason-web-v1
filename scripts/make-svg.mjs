@@ -1,8 +1,8 @@
 import fs from 'node:fs';
 
 const dir = 'dist/assets';
-const js = fs.readdirSync(dir).find(f => /^index-.*\.js$/.test(f));
-const css = fs.readdirSync(dir).find(f => /^index-.*\.css$/.test(f));
+const js = 'minason.js';
+const css = 'minason.css';
 
 if (!js || !css) throw new Error('Could not find the built JS and CSS files.');
 
@@ -21,12 +21,7 @@ const svg = `<?xml version="1.0" encoding="UTF-8"?>
         <xhtml:style>
           html, body { margin:0; width:100%; height:100%; overflow:hidden; }
         </xhtml:style>
-        <xhtml:script><![CDATA[
-          import("../assets/${js}").catch(error => {
-            document.body.textContent = "Minason startup error: " + error;
-            console.error(error);
-          });
-        ]]></xhtml:script>
+        <xhtml:script src="../assets/${js}"></xhtml:script>
       </xhtml:head>
       <xhtml:body>
         <xhtml:div id="app">

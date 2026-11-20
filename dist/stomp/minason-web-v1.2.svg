@@ -9,16 +9,11 @@
         <xhtml:meta charset="utf-8"/>
         <xhtml:meta name="viewport" content="width=device-width, initial-scale=1"/>
         <xhtml:title>minason web v1.2</xhtml:title>
-        <xhtml:link rel="stylesheet" href="../assets/index-thknHBar.css"/>
+        <xhtml:link rel="stylesheet" href="../assets/minason.css"/>
         <xhtml:style>
           html, body { margin:0; width:100%; height:100%; overflow:hidden; }
         </xhtml:style>
-        <xhtml:script><![CDATA[
-          import("../assets/index-ChFXSGaL.js").catch(error => {
-            document.body.textContent = "Minason startup error: " + error;
-            console.error(error);
-          });
-        ]]></xhtml:script>
+        <xhtml:script src="../assets/minason.js"></xhtml:script>
       </xhtml:head>
       <xhtml:body>
         <xhtml:div id="app">
